@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Sahm System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c2d, #1a1a4a, #2d1a4a);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+            z-index: -2;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .signup-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .signup-container:hover::before {
+            left: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .glow-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe, #4facfe, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #b8b8ff;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #00f2fe;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00f2fe;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.2);
+        }
+
+/* FIX DROPDOWN MENUS - Dark background for options */
+.form-select option {
+    background: #1a1a4a !important;
+    color: white !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+}
+
+/* Ensure dropdown itself has proper styling */
+.form-select {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Fix for Firefox */
+.form-select:-moz-focusring {
+    color: transparent !important;
+    text-shadow: 0 0 0 white !important;
+}
+
+/* Fix for Internet Explorer */
+.form-select::-ms-expand {
+    display: none;
+}
+
+        .role-fields {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            color: #0c0c2d;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
+        }
+
+        .message {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 2rem;
+            text-align: center;
+            color: #00f2fe;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+
+        .back-link:hover {
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Ensure the form is always visible and scrollable */
+        @media (max-height: 800px) {
+            .page-container {
+                align-items: flex-start;
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+            
+            .signup-container {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .signup-container {
+                width: 95%;
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            .glow-text {
+                font-size: 2rem;
+            }
+            
+            .page-container {
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 1.5rem 1rem;
+                border-radius: 20px;
+            }
+            
+            .glow-text {
+                font-size: 1.8rem;
+            }
+            
+            .form-input {
+                padding: 0.8rem 1rem;
+            }
+            
+            .btn {
+                padding: 1rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="page-container">
+        <div class="signup-container">
+            <div class="header">
+                <h1 class="glow-text">JOIN SAHM SYSTEM</h1>
+                <p class="subtitle">Create your futuristic medical account</p>
+            </div>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">FULL NAME</label>
+                    <input type="text" id="name" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">USERNAME</label>
+                    <input type="text" id="username" class="form-input" placeholder="Choose a username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">PASSWORD</label>
+                    <input type="password" id="password" class="form-input" placeholder="Create a secure password" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ACCOUNT TYPE</label>
+                    <select id="user_type" class="form-input form-select" required onchange="toggleRoleFields()">
+                        <option value="">Select your role</option>
+                        <option value="patients">Patient</option>
+                        <option value="doctors">Doctor</option>
+                        <option value="nurses">Nurse</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="languageGroup" style="display: none;">
+                    <label class="form-label">PREFERRED LANGUAGE</label>
+                    <select id="preferred_language" class="form-input form-select" required>
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="it">Italian</option>
+                        <option value="pt">Portuguese</option>
+                        <option value="ru">Russian</option>
+                        <option value="zh">Chinese</option>
+                        <option value="ja">Japanese</option>
+                        <option value="ar">Arabic</option>
+                    </select>
+                </div>
+                
+                <div id="doctorFields" class="role-fields">
+                    <div class="form-group">
+                        <label class="form-label">SPECIALIZATION</label>
+                        <input type="text" id="specialization" class="form-input" placeholder="e.g., Cardiology, Neurology">
+                    </div>
+                </div>
+                
+                <div id="nurseFields" class="role-fields">
+                    <div class="form-group">
+                        <label class="form-label">DEPARTMENT</label>
+                        <input type="text" id="department" class="form-input" placeholder="e.g., Emergency, ICU">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    🚀 CREATE ACCOUNT
+                </button>
+            </form>
+
+            <div id="message" class="message"></div>
+            
+            <a href="/" class="back-link">
+                ← Back to Sahm System Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 4 + 1 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particles.appendChild(particle);
+            }
+        }
+function toggleRoleFields() {
+    const userType = document.getElementById('user_type').value;
+    const languageGroup = document.getElementById('languageGroup');
+    
+    // Hide all role-specific fields first
+    document.getElementById('doctorFields').style.display = 'none';
+    document.getElementById('nurseFields').style.display = 'none';
+    
+    // Show language selection only for patients
+    if (userType === 'patients') {
+        languageGroup.style.display = 'block';
+    } else {
+        languageGroup.style.display = 'none';
+        // Set default language for non-patients
+        document.getElementById('preferred_language').value = 'en';
+    }
+    
+    // Show role-specific fields
+    if (userType === 'doctors') {
+        document.getElementById('doctorFields').style.display = 'block';
+    } else if (userType === 'nurses') {
+        document.getElementById('nurseFields').style.display = 'block';
+    }
+}
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⚡ CREATING...';
+            submitBtn.disabled = true;
+
+            const name = document.getElementById('name').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const userType = document.getElementById('user_type').value;
+            const specialization = document.getElementById('specialization').value;
+            const department = document.getElementById('department').value;
+            const preferred_language = document.getElementById('preferred_language').value;
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        name: name,
+                        username: username,
+                        password: password,
+                        user_type: userType,
+                        specialization: specialization,
+                        department: department,
+                        preferred_language: preferred_language
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageDiv.textContent = '🎉 Account created! Redirecting...';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = result.message;
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                messageDiv.textContent = '🚨 Connection error - Please try again';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', createParticles);
+
+        // Auto-scroll to make sure everything is visible
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 100);
+    </script>
+</body>
+</html>

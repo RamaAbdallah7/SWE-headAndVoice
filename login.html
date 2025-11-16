@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sahm System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c2d, #1a1a4a, #2d1a4a);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+            z-index: -2;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .login-container:hover::before {
+            left: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .glow-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe, #4facfe, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #b8b8ff;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #00f2fe;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #00f2fe;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.2);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2300f2fe' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* FIX DROPDOWN VISIBILITY - Dark background for options */
+        .form-select option {
+            background: #1a1a4a !important;
+            color: white !important;
+            padding: 12px !important;
+            font-size: 14px !important;
+            border: none !important;
+        }
+
+        .form-select option:hover,
+        .form-select option:focus {
+            background: #2d1a4a !important;
+            color: #00f2fe !important;
+        }
+
+        .form-select option:checked {
+            background: #00f2fe !important;
+            color: #0c0c2d !important;
+        }
+
+        .form-select:-moz-focusring {
+            color: transparent !important;
+            text-shadow: 0 0 0 white !important;
+        }
+
+        .form-select option:-moz-focusring {
+            color: white !important;
+            text-shadow: none !important;
+        }
+
+        .form-select::-ms-expand {
+            display: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            color: #0c0c2d;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.4);
+        }
+
+        .message {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 2rem;
+            text-align: center;
+            color: #00f2fe;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+
+        .back-link:hover {
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+        }
+
+        .demo-accounts {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .demo-title {
+            color: #00f2fe;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .demo-section {
+            margin-bottom: 1rem;
+        }
+
+        .demo-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .demo-role {
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .demo-info {
+            color: #b8b8ff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .voice-badge {
+            display: inline-block;
+            background: rgba(0, 242, 254, 0.2);
+            color: #00f2fe;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-height: 800px) {
+            .page-container {
+                align-items: flex-start;
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+            
+            .login-container {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                width: 95%;
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            .glow-text {
+                font-size: 2rem;
+            }
+            
+            .page-container {
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.5rem 1rem;
+                border-radius: 20px;
+            }
+            
+            .glow-text {
+                font-size: 1.8rem;
+            }
+            
+            .form-input, .form-select {
+                padding: 0.8rem 1rem;
+            }
+            
+            .btn {
+                padding: 1rem;
+            }
+            
+            .demo-accounts {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="page-container">
+        <div class="login-container">
+            <div class="header">
+                <h1 class="glow-text">ACCESS SAHM SYSTEM</h1>
+                <p class="subtitle">Enter your futuristic medical portal</p>
+            </div>
+
+<form id="loginForm">
+    <div class="form-group">
+        <label class="form-label">USERNAME</label>
+        <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+    </div>
+    
+    <div class="form-group">
+        <label class="form-label">PASSWORD</label>
+        <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+    </div>
+    
+    <!-- Language selection - initially hidden -->
+    <div class="form-group" id="languageGroup" style="display: none;">
+        <label class="form-label">VOICE RECOGNITION LANGUAGE</label>
+        <select id="language" class="form-input form-select" required>
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+            <option value="ar">Arabic</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        🚀 LOGIN TO SYSTEM
+    </button>
+</form>
+            <div id="message" class="message"></div>
+            
+            <a href="/" class="back-link">
+                ← Back to Sahm System Home
+            </a>
+
+            <div class="demo-accounts">
+                <div class="demo-title pulse">🔐 DEMO ACCESS CREDENTIALS</div>
+                
+                <div class="demo-section">
+                    <div class="demo-role">🧑‍💼 PATIENTS <span class="voice-badge">VOICE CONTROL</span></div>
+                    <div class="demo-info">• john / 123</div>
+                    <div class="demo-info">• sarah / 123</div>
+                </div>
+                
+                <div class="demo-section">
+                    <div class="demo-role">👨‍⚕️ DOCTORS</div>
+                    <div class="demo-info">• drsmith / 123</div>
+                    <div class="demo-info">• drjohn / 123</div>
+                </div>
+                
+                <div class="demo-section">
+                    <div class="demo-role">👩‍⚕️ NURSES</div>
+                    <div class="demo-info">• nurse1 / 123</div>
+                    <div class="demo-info">• nurse2 / 123</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 4 + 1 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particles.appendChild(particle);
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⚡ AUTHENTICATING...';
+            submitBtn.disabled = true;
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const language = document.getElementById('language').value;
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&language=${encodeURIComponent(language)}`
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    messageDiv.textContent = '🎉 ' + result.message;
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = '🚨 ' + result.message;
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                messageDiv.textContent = '🚨 Connection error - Please try again';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', createParticles);
+
+        // Auto-scroll to make sure everything is visible
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 100);
+
+        // Add click-to-fill demo credentials
+        document.querySelectorAll('.demo-info').forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function() {
+                const text = this.textContent.replace('•', '').trim();
+                const [username, password] = text.split(' / ');
+                
+                document.getElementById('username').value = username;
+                document.getElementById('password').value = password;
+                
+                // Show confirmation
+                const flash = document.createElement('div');
+                flash.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 242, 254, 0.9);
+                    color: #0c0c2d;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    z-index: 10000;
+                    animation: fadeOut 2s ease-in-out;
+                `;
+                flash.textContent = `✅ ${username} credentials loaded!`;
+                document.body.appendChild(flash);
+                setTimeout(() => flash.remove(), 2000);
+            });
+        });
+
+        // Add CSS for fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                70% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            }
+        `;
+        document.head.appendChild(style);
+        // Show language selection only for patients (role-based detection)
+document.getElementById('username').addEventListener('input', function() {
+    const username = this.value.toLowerCase();
+    const languageGroup = document.getElementById('languageGroup');
+    
+    // Show language selection for patients (non-medical staff usernames)
+    const medicalStaffPatterns = ['dr', 'nurse', 'admin', 'staff'];
+    const isMedicalStaff = medicalStaffPatterns.some(pattern => 
+        username.includes(pattern)
+    );
+    
+    if (!isMedicalStaff && username.length > 0) {
+        languageGroup.style.display = 'block';
+    } else {
+        languageGroup.style.display = 'none';
+        document.getElementById('language').value = 'en'; // Reset to default
+    }
+});
+    </script>
+</body>
+</html>

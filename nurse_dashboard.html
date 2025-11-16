@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Dashboard - SahmSystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c2d, #1a1a4a, #2d1a4a);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+            z-index: -2;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .page-container {
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .header:hover::before {
+            left: 100%;
+        }
+
+        .glow-text {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00f2fe, #4facfe, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #b8b8ff;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .nurse-info {
+            margin-top: 1rem;
+            color: #00f2fe;
+            font-size: 1.1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 242, 254, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #00f2fe;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #00f2fe;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%2300f2fe' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+        }
+
+        .form-select option {
+            background: #1a1a4a !important;
+            color: white !important;
+            padding: 1rem;
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #00f2fe;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.2);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            color: #0c0c2d;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.4);
+        }
+
+        .patient-data-section {
+            grid-column: 1 / -1;
+        }
+
+        .patient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .patient-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 242, 254, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .patient-id {
+            color: #00f2fe;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .patient-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.8rem;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00f2fe;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #b8b8ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* FIXED LOGOUT - Stays in top corner, doesn't scroll */
+        .logout-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .logout {
+            color: #00f2fe;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            display: inline-block;
+        }
+
+        .logout:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .feedback-toast {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .glow-text {
+                font-size: 2rem;
+            }
+            
+            .header {
+                padding: 1.5rem;
+                margin-top: 1rem;
+            }
+            
+            .logout-container {
+                position: relative;
+                top: auto;
+                right: auto;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- FIXED LOGOUT - Stays in top corner -->
+    <div class="logout-container">
+        <a href="/logout" class="logout">🚪 Logout</a>
+    </div>
+
+    <div class="page-container">
+        <div class="dashboard-container">
+            <div class="header">
+                <h1 class="glow-text">SAHM SYSTEM NURSE</h1>
+                <p class="subtitle">Advanced Patient Monitoring System</p>
+                <div class="nurse-info">
+                    👩‍⚕️ Welcome, {{ user.name }} - {{ user.department }}
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 class="card-title">❤️ Record Vital Signs</h3>
+                    <div class="form-group">
+                        <label class="form-label">SELECT PATIENT</label>
+                        <select id="vitalPatientSelect" class="form-select">
+                            <option value="P001">John Smith (P001)</option>
+                            <option value="P002">Sarah Johnson (P002)</option>
+                            <option value="P003">Ali Hassan (P003)</option>
+                            <option value="P004">Marie Dubois (P004)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">BLOOD PRESSURE</label>
+                        <input type="text" id="bp" class="form-input" placeholder="e.g., 120/80">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">HEART RATE</label>
+                        <input type="text" id="hr" class="form-input" placeholder="e.g., 72">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">TEMPERATURE</label>
+                        <input type="text" id="temp" class="form-input" placeholder="e.g., 98.6°F">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">OBSERVATION NOTES</label>
+                        <textarea id="vitalNotes" class="form-textarea" placeholder="Enter observation notes..." rows="2"></textarea>
+                    </div>
+                    <button onclick="saveVitals()" class="btn btn-primary">
+                        ❤️ Save Vital Signs
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">📝 Patient Observation</h3>
+                    <div class="form-group">
+                        <label class="form-label">SELECT PATIENT</label>
+                        <select id="notePatientSelect" class="form-select">
+                            <option value="P001">John Smith (P001)</option>
+                            <option value="P002">Sarah Johnson (P002)</option>
+                            <option value="P003">Ali Hassan (P003)</option>
+                            <option value="P004">Marie Dubois (P004)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">OBSERVATION NOTES</label>
+                        <textarea id="nurseNote" class="form-textarea" placeholder="Enter detailed patient observation notes..." rows="3"></textarea>
+                    </div>
+                    <button onclick="saveNurseNote()" class="btn btn-primary">
+                        📝 Save Observation
+                    </button>
+                </div>
+
+                <div class="card patient-data-section">
+                    <h3 class="card-title">📊 Patient Monitoring</h3>
+                    <button onclick="loadPatientData()" class="btn btn-secondary">
+                        🔄 Refresh Data
+                    </button>
+                    <div class="patient-grid" id="patientData">
+                        <!-- Patient data will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedbackToast" class="feedback-toast">
+        <strong>✅ Success!</strong>
+        <div>Action completed successfully</div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 4 + 1 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particles.appendChild(particle);
+            }
+        }
+
+        function showFeedback(message) {
+            const toast = document.getElementById('feedbackToast');
+            toast.innerHTML = `<strong>✅ ${message}</strong><div>Action completed successfully</div>`;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        async function saveVitals() {
+            const patientId = document.getElementById('vitalPatientSelect').value;
+            const bp = document.getElementById('bp').value;
+            const hr = document.getElementById('hr').value;
+            const temp = document.getElementById('temp').value;
+            const notes = document.getElementById('vitalNotes').value;
+
+            if (!bp || !hr || !temp) {
+                showFeedback('Please fill all vital sign fields');
+                return;
+            }
+
+            const response = await fetch('/api/save_vitals', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    patient_id: patientId, 
+                    blood_pressure: bp, 
+                    heart_rate: hr, 
+                    temperature: temp,
+                    notes: notes
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById('bp').value = '';
+                document.getElementById('hr').value = '';
+                document.getElementById('temp').value = '';
+                document.getElementById('vitalNotes').value = '';
+                showFeedback('Vital Signs Recorded');
+                loadPatientData();
+            } else {
+                showFeedback('Error: ' + result.message);
+            }
+        }
+
+        async function saveNurseNote() {
+            const patientId = document.getElementById('notePatientSelect').value;
+            const note = document.getElementById('nurseNote').value;
+
+            if (!note) {
+                showFeedback('Please enter observation notes');
+                return;
+            }
+
+            const response = await fetch('/api/save_nurse_note', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({patient_id: patientId, note})
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById('nurseNote').value = '';
+                showFeedback('Observation Saved');
+                loadPatientData();
+            } else {
+                showFeedback('Error: ' + result.message);
+            }
+        }
+
+        async function loadPatientData() {
+            try {
+                const response = await fetch('/api/patient_data');
+                const result = await response.json();
+                const container = document.getElementById('patientData');
+                container.innerHTML = '';
+
+                if (result.success) {
+                    for (const [patientId, patient] of Object.entries(result.data)) {
+                        const nurseObservations = patient.doctor_notes.filter(note => note.type === 'nurse_observation').length;
+                        
+                        const patientCard = document.createElement('div');
+                        patientCard.className = 'patient-card';
+                        patientCard.innerHTML = `
+                            <div class="patient-id">Patient ${patientId}</div>
+                            <div class="patient-stats">
+                                <div class="stat">
+                                    <div class="stat-number">${patient.vital_signs.length}</div>
+                                    <div class="stat-label">❤️ Vital Signs</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-number">${nurseObservations}</div>
+                                    <div class="stat-label">📝 Observations</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-number">${patient.prescriptions.length}</div>
+                                    <div class="stat-label">💊 Prescriptions</div>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(patientCard);
+                    }
+                } else {
+                    container.innerHTML = '<p>Error loading data</p>';
+                }
+            } catch (error) {
+                document.getElementById('patientData').innerHTML = '<p>Connection error</p>';
+            }
+        }
+
+        // 🚀 AUTO-REFRESH
+        loadPatientData();
+        setInterval(loadPatientData, 30000);
+
+        document.addEventListener('DOMContentLoaded', createParticles);
+    </script>
+</body>
+</html>
